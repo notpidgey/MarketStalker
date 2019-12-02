@@ -33,16 +33,30 @@ namespace MarketStalker
               
                 ItemPage.Rootobject rootObjectItemPage =
                     JsonConvert.DeserializeObject<ItemPage.Rootobject>(itempage);
-                
-              //ItemStatistics.Rootobject rootObjectStatisticsPage =
-              //      JsonConvert.DeserializeObject<ItemStatistics.Rootobject>(statisticspage);
 
-                var minPrice = rootObjectItemPage.Payload.Orders
-                    .Where(w => w.User.Status == "ingame" && w.order_type == "sell")
-                    .Select(s => s.Platinum)
-                    .OrderBy(o => o)
-                    .Take(2)
-                    .Last();
+                //ItemStatistics.Rootobject rootObjectStatisticsPage =
+                //      JsonConvert.DeserializeObject<ItemStatistics.Rootobject>(statisticspage);
+
+                object minPrice = null;
+                try
+                {
+                    minPrice = rootObjectItemPage.Payload.Orders
+                        .Where(w => w.User.Status == "ingame" && w.order_type == "sell")
+                        .Select(s => s.Platinum)
+                        .OrderBy(o => o)
+                        .Take(2)
+                        .Last();
+                }
+                catch
+                {
+                    minPrice = rootObjectItemPage.Payload.Orders
+                        .Where(w => w.order_type == "sell")
+                        .Select(s => s.Platinum)
+                        .OrderBy(o => o)
+                        .Take(2)
+                        .Last();
+                }
+
 
                 //var recentStats = rootObjectStatisticsPage.Payload.StatisticsClosed.The48Hours
                 //    .OrderByDescending(joe => joe.Datetime)
@@ -65,15 +79,16 @@ namespace MarketStalker
 
                     bool matches = Convert.ToDouble(priceDifference.ToString().Replace("-", "")) >= mainwindow.minPrice.Value && Convert.ToDouble(priceDifference.ToString().Replace("-", "")) <= mainwindow.maxPrice.Value;
 
-                    var data2 = new Items.DataGrid { Id = sellOrder.Id, Item = sellOrder.Item.En.ItemName, Price = newlistingprice, Third = thirdlistingprice, Discount = priceDifference, Seller = seller, Rep = rep, Matches = matches, Time = time };
+                    var data2 = new Items.DataGrid { Id = sellOrder.Id.Substring(3,7), Item = sellOrder.Item.En.ItemName, Price = newlistingprice, Third = thirdlistingprice, Discount = priceDifference, Seller = seller, Rep = rep, Matches = matches, Time = time };
                     mainwindow.CollectionGrid.Items.Add(data2);
                     mainwindow.ConsoleOutput.ScrollToEnd();
-                    mainwindow.CollectionGrid.ScrollIntoView(data2);
+                    //mainwindow.CollectionGrid.ScrollIntoView(data2);
                 }
                 else
                     MainWindow.main.ConsoleLogNew =
                         "Item: " + sellOrder.Item.En.ItemName + " Price: " +
                         newlistingprice + " Difference: +" + priceDifference.ToString();
+                mainwindow.ConsoleOutput.ScrollToEnd();
             }
         }
 

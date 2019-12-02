@@ -20,7 +20,7 @@
         <Grid>
             <Grid>
                 <GroupBox Header="Collected Data" Background="#CC323232" BorderBrush="#CC323232" Width="795" Height="350" HorizontalAlignment="Left" VerticalAlignment="Top">
-                    <DataGrid Width="780" Height="300" Name="CollectionGrid" HeadersVisibility="Column" VerticalAlignment="Top" 
+                    <DataGrid Width="780" Height="280" Name="CollectionGrid" HeadersVisibility="Column" VerticalAlignment="Top" 
                           HorizontalScrollBarVisibility="Hidden" 
                           CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False">
                         <DataGrid.Columns>
