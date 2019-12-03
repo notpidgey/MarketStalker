@@ -79,7 +79,7 @@ namespace MarketStalker
 
                     bool matches = Convert.ToDouble(priceDifference.ToString().Replace("-", "")) >= mainwindow.minPrice.Value && Convert.ToDouble(priceDifference.ToString().Replace("-", "")) <= mainwindow.maxPrice.Value;
 
-                    var data2 = new Items.DataGrid { Id = sellOrder.Id.Substring(3,7), Item = sellOrder.Item.En.ItemName, Price = newlistingprice, Third = thirdlistingprice, Discount = priceDifference, Seller = seller, Rep = rep, Matches = matches, Time = time };
+                    var data2 = new Items.DataGrid { Id = sellOrder.Id.Substring(5,9), Item = sellOrder.Item.En.ItemName, Price = newlistingprice, Third = thirdlistingprice, Discount = priceDifference, Seller = seller, Rep = rep, Matches = matches, Time = time };
                     mainwindow.CollectionGrid.Items.Add(data2);
                     mainwindow.ConsoleOutput.ScrollToEnd();
                     //mainwindow.CollectionGrid.ScrollIntoView(data2);
