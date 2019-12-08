@@ -1,53 +1,69 @@
+
 # MarketStalker #
-Market Stalker is a tool that used the Warframe.Market to find the cheapest prices by using an optimized, easy to use, and lightweight
-interface created by me ^_^
+Market Stalker is a tool that uses the Warframe.Market API to find the cheapest prices with an optimized, easy to use, and lightweight interface created by me ^_^
 
-![picture alt](https://img.pidgey.software/f/AdditionalBuisnessPregnantDay.png)
-
-# Prologue #
-This is my submission for the C# guild New Year Competition.
-
-I first joined the guild in January 1st of 2019 without knowing the language and thought 
+I first joined the guild in January 1st of 2019 without knowing C# and thought 
 this would be a great way to show off my knowledge of C#, XAML, and JSON and what I have learned so far.
-Thank you for taking your time to open this repo.
+Thank you for taking your time to open this repository.
 
+This is my submission for the C# guild New Year Competition.
 Enjoy.
 
-# How To Use #
+# Manual: #
 
-### Select Items To Watch ###
-![picture alt](https://img.pidgey.software/f/HelpfulPogChampSusState.png)
+![picture alt](https://img.pidgey.software/f/AvailableProblemPopularPart.png)
 
-► The first column will contain matching checkboxes for the items you want to watch 👀
+### Data ###
 
-► The second column will contain all the Item Names
+►  Total Items displays all the items pulled from the WarframeMarket API when the application was started.
 
-► The third column will contain all the ID's for the Items you’re looking for.
+► Items Watching shows a total count of the items you  selected to be watched.
 
-### Customize Your Results ###
-![picture alt](https://img.pidgey.software/f/ElectricalCountryInterestingFact.png)
+### Data Options ###
 
-► Check delay will increase/decrease the time between most_recent listings requests.
+►  Changing "Minimum Price Decay" will make all items x amount or more show as true in the DataGrid.
 
-► Minimum price discount for the item to be considered TRUE in the "Matches" column of the datagrid.
+► Changing "Maximum Price Decay" will make all items above this number appear as false on the DataGrid.
 
-► Same thing as minimum, this will make sure no one has a typo that will enter your results set.
+### Extra Options ###
 
-### Console Log ###
-![picture alt](https://img.pidgey.software/f/KnowJobImpossibleMonth.png)
+► Watch All Items will ignore checked items in the Item table and look for every item received by the API.
 
-Will log results and stuff.
+► Show Non-Matching Items will ignore DataOptions and display items that don't match as False under the "Matches" column.
+
+### Items ###
+
+► Column 1 displays checkboxes which you can check to select your wanted items.
+
+► Column 2 displays the item name.
+
+► Column 3 displays the item ID.
 
 ### Collected Data ###
-![picture alt](https://img.pidgey.software/f/TraditionalJobBasicKappa.png)
 
-Just a Data Grid that show you all discounted items. If the discount is not low enough it will say matching as false.
-You are able to sort the columns and stuff.
+► ID displays digits 5-9 of the order ID.
+
+► Item displays the Item name.
+
+► Price displays the price of the new order.
+
+► 2ND displays the second cheapest listing for that item. This is used to calculate the discount.
+
+► Discount displays the total discount of the item.
+
+► Seller displays the seller name.
+
+► REP displays the reputation of the seller who put up this listing.
+
+► Matches is a True/False that depends on the settings that had been configured in DataOptions.
+
+► Time displays the moment when this listing was put up on Warframe.Market
+
+
+### Console ###
+
+► Outputs all the found listings with the item, price, and price difference.
 
 
 # Thank You #
-The C# Guild for helping me, encouraging me to optimize my code, and make better decisions. ~~And for giving me a place to shitpost~~
-
-StackOverflow *I don't think I would be coding if it didn't exist*
-
-GitHub and JetBrains for giving me access to amazing tools to making development easier.
+The C# Guild for helping me, encouraging me to optimize my code, and make better decisions. ~~And for giving me a place to shitpost~~ And you for taking the time to checkout my project :D
