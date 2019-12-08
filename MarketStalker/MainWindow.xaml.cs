@@ -137,7 +137,7 @@ namespace MarketStalker
         private async void IntialStart_Click(object sender, RoutedEventArgs e)
         {
             InitialStartButton++;
-            if(IsOdd(InitialStartButton))
+            if(InitialStartButton == 1)
             {
                 var myItems = ItemsIDCheckList.ItemsSource as IEnumerable<ItemEntireList>;
 
@@ -148,9 +148,13 @@ namespace MarketStalker
 
                 InitialStart.Content = "Pause Recent Search";
             }
-            else
+            else if(IsOdd(InitialStartButton) == false)
             {
                 InitialStart.Content = "Continue Listing Parse";
+            }
+            else
+            {
+                InitialStart.Content = "Pause Recent Search";
             }
         }
 

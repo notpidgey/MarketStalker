@@ -15,6 +15,8 @@ namespace MarketStalker
         {
             MainWindow mainwindow = (MainWindow)Application.Current.MainWindow;
 
+            mainwindow.CollectionGrid.Items.Clear();
+
             string data = Request.Get("https://api.warframe.market/v1/most_recent");
             MostRecentListing.RootObject rootobject = JsonConvert.DeserializeObject<MostRecentListing.RootObject>(data);
 
@@ -24,25 +26,15 @@ namespace MarketStalker
                 {
                     await Task.Delay(100);
                 }
-                //if (RandomHelpers.IsOdd(mainwindow.InitialStartButton) == false)
-                //    break;
 
                 await Task.Delay(350);
 
                 string reqstname = sellOrder.Item.En.ItemName.ToLower().Replace("&", "and").Replace("'", "").Replace("-", "_").Replace(" ", "_");
-
                 string itempage = Request.Get("https://api.warframe.market/v1/items/" +
                                               reqstname + "/orders");
-                //string statisticspage =
-                //    Request.Get("https://api.warframe.market/v1/items/" + reqstname +
-                //                "/statistics");
-
 
                 ItemPage.Rootobject rootObjectItemPage =
                     JsonConvert.DeserializeObject<ItemPage.Rootobject>(itempage);
-
-                //ItemStatistics.Rootobject rootObjectStatisticsPage =
-                //      JsonConvert.DeserializeObject<ItemStatistics.Rootobject>(statisticspage);
 
                 object minPrice = null;
                 try
@@ -64,22 +56,16 @@ namespace MarketStalker
                         .Last();
                 }
 
-
-                //var recentStats = rootObjectStatisticsPage.Payload.StatisticsClosed.The48Hours
-                //    .OrderByDescending(joe => joe.Datetime)
-                //    .First();
-
                 string d = sellOrder.Item.En.ItemName;
                 double thirdlistingprice = Convert.ToDouble(minPrice);
-                //double thirdlistingprice = recentStats.AvgPrice;
+
                 double newlistingprice = sellOrder.Platinum;
                 double priceDifference = newlistingprice - thirdlistingprice;
 
                 if (RandomHelpers.IsNegative(priceDifference))
                 {
                     MainWindow.main.ConsoleLogNew = "Item: " + sellOrder.Item.En.ItemName + " Price: " + newlistingprice + " Difference: " + priceDifference;
-                    //Its cheaper! Woweee how cool am I right? haha
-                    //Lets get some more info about this sale
+
                     string seller = sellOrder.User.IngameName;
                     double rep = sellOrder.User.Reputation;
                     DateTime time = sellOrder.LastUpdate;
@@ -116,6 +102,7 @@ namespace MarketStalker
                 mainwindow.CollectionGrid.Items.Refresh();
             }
             mainwindow.showNonMatching.Content = "Recent Listings Parse";
+            mainwindow.InitialStartButton = 0;
         }
 
     }
