@@ -18,11 +18,14 @@ using Newtonsoft.Json.Linq;
 using static MarketStalker.Items;
 using static MarketStalker.RandomHelpers;
 
+
+
 namespace MarketStalker
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+
     public partial class MainWindow : MetroWindow
     {
 
@@ -38,18 +41,6 @@ namespace MarketStalker
         {
             set { Dispatcher.Invoke(new Action(() => { ConsoleOutput.Text += "\n" + value; })); }
         }
-
-        public string ConsoleOutputMethod
-        {
-            get
-            {
-                return ConsoleOutput.Text;
-            }
-            set
-            {
-                ConsoleOutput.Text = value;
-            }
-        }
         
         public bool WatchAllItems
         {
@@ -58,7 +49,9 @@ namespace MarketStalker
                 return (bool) WatchAll.IsChecked;
             }
         }
-        
+
+
+
         private void PullData(string method)
         {
             string data;
@@ -75,11 +68,11 @@ namespace MarketStalker
 
             items = rootobject.Payload.Items.Select(a => new ItemEntireList { Item = a.ItemName, IsChecked = false, Id = a.Id }).ToList();
 
-            icTodoList.Items.SortDescriptions.Add(
+            ItemsIDCheckList.Items.SortDescriptions.Add(
                 new SortDescription(
                     "Item",
                     ListSortDirection.Ascending));
-            icTodoList.ItemsSource = items;
+            ItemsIDCheckList.ItemsSource = items;
 
             TotalItemsText.Text = rootobject.Payload.Items.Count().ToString();
             ConsoleOutput.Text += "\nUpdated Item List Using " + method;
@@ -88,7 +81,7 @@ namespace MarketStalker
 
         public void UserFilter()
         {
-            ICollectionView view = CollectionViewSource.GetDefaultView(icTodoList.ItemsSource);
+            ICollectionView view = CollectionViewSource.GetDefaultView(ItemsIDCheckList.ItemsSource);
             if (view != null)
             {
                 switch (TextFilter.Text.ToLower())
@@ -101,10 +94,10 @@ namespace MarketStalker
                     case "vome":
                     case "netra":
                     case "khra":
-                        view.Filter = item => item is ItemEntireList itemList ? itemList.Item.Contains(TextFilter.Text.ToUpper()) : false;
+                        view.Filter = item => item is ItemEntireList itemList && itemList.Item.Contains(TextFilter.Text.ToUpper());
                         break;
                     default:
-                        view.Filter = item => item is ItemEntireList itemList ? itemList.Item.Contains(UppercaseWords(TextFilter.Text)) : false;
+                        view.Filter = item => item is ItemEntireList itemList && itemList.Item.Contains(UppercaseWords(TextFilter.Text));
                         break;
 
                 }
@@ -115,16 +108,6 @@ namespace MarketStalker
         private async void TextFilter_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
             UserFilter();
-        }
-
-        private void CheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            TotalItemsWatchingText.Text = (Convert.ToInt32(TotalItemsWatchingText.Text) + 1).ToString();
-        }
-
-        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            TotalItemsWatchingText.Text = (Convert.ToInt32(TotalItemsWatchingText.Text) - 1).ToString();
         }
 
         private async void MetroWindow_Loaded(object sender, RoutedEventArgs e)
@@ -148,33 +131,47 @@ namespace MarketStalker
 
         }
 
+        public int InitialStartButton = 0;
+        public int RunningTaskButton = 0;
+
         private async void IntialStart_Click(object sender, RoutedEventArgs e)
         {
-            //var str = ItemEntireList.Where(p => p.IsChecked).Select(p => p.Item);
-            //foreach(var item in str)
-            //{
-            //    ConsoleOutput.Text += "\n"  + item;
-            //}
+            InitialStartButton++;
+            if(IsOdd(InitialStartButton))
+            {
+                var myItems = ItemsIDCheckList.ItemsSource as IEnumerable<ItemEntireList>;
 
-            var myItems = icTodoList.ItemsSource as IEnumerable<ItemEntireList>;
+                if (WatchAll.IsChecked == true)
+                    RecentListingsTask.InitialStart(myItems.Select(p => p.Id));
+                else
+                    RecentListingsTask.InitialStart(myItems.Where(p => p.IsChecked).Select(p => p.Id));
 
-            if(WatchAll.IsChecked == true)
-                RecentListingsTask.InitialStart(myItems.Select(p => p.Id));
+                InitialStart.Content = "Pause Recent Search";
+            }
             else
-                RecentListingsTask.InitialStart(myItems.Where(p => p.IsChecked).Select(p => p.Id));
-
-
-
-            //foreach (var item in myItems.Where(a => a.IsChecked)) 
-            //{
-            //    ConsoleOutput.Text += "\n" + item.Item;
-            //}
-
+            {
+                InitialStart.Content = "Continue Listing Parse";
+            }
         }
 
         private void ButtonAPI_Click(object sender, RoutedEventArgs e)
         {
             PullData("Warframe Market API");
+        }
+
+        private void RunningTask_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            TotalItemsWatchingText.Text = (Convert.ToInt32(TotalItemsWatchingText.Text) + 1).ToString();
+        }
+
+        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            TotalItemsWatchingText.Text = (Convert.ToInt32(TotalItemsWatchingText.Text) - 1).ToString();
         }
     }
 }

@@ -22,7 +22,9 @@
                 <GroupBox Header="Collected Data" Background="#CC323232" BorderBrush="#CC323232" Width="795" Height="350" HorizontalAlignment="Left" VerticalAlignment="Top">
                     <DataGrid Width="780" Height="280" Name="CollectionGrid" HeadersVisibility="Column" VerticalAlignment="Top" 
                           HorizontalScrollBarVisibility="Hidden" 
-                          CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False">
+                          CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False" 
+                          EnableRowVirtualization="True" EnableColumnVirtualization="True" IsReadOnly="True" 
+                          ScrollViewer.CanContentScroll="True">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding Id}" MaxWidth="60" MinWidth="60"/>
                             <DataGridTextColumn Header="Item" Binding="{Binding Item}" Width="*"/>
@@ -46,13 +48,13 @@
             <GroupBox Header="Options" Background="#CC323232" BorderBrush="#CC323232"  Width="200" HorizontalAlignment="Right">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="80"/>
-                        <RowDefinition Height="210"/>
-                        <RowDefinition Height="70"/>
-                        <RowDefinition Height="90"/>
+                        <RowDefinition Height="85"/>
+                        <RowDefinition Height="150"/>
+                        <RowDefinition Height="84"/>
+                        <RowDefinition Height="130"/>
                     </Grid.RowDefinitions>
-                    
-                    <Grid>
+
+                    <Grid Grid.Row="0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="30"/>
                             <RowDefinition Height="25"/>
@@ -81,57 +83,56 @@
                             </Grid>
                         </Label>
                     </Grid>
-                    
+
                     <Grid Grid.Row="1">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="30"/>
-                            
-                            <RowDefinition Height="25"/>
-                            <RowDefinition Height="35"/>
-                            
+
                             <RowDefinition Height="25"/>
                             <RowDefinition Height="35"/>
 
                             <RowDefinition Height="25"/>
                             <RowDefinition Height="35"/>
                         </Grid.RowDefinitions>
-                        <Label Content="Data Options" FontSize="15"/>
-                        <Label Grid.Row="1" Content="Check Delay (Minutes)" />
-                        <Controls:NumericUpDown Minimum="1" Value="2" Grid.Row="2" Width="180 " VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Left"/>
-                        <Label Grid.Row="3" Content="Minimum Price Decay"/>
-                        <Controls:NumericUpDown x:Name="minPrice" Minimum="1" Value="5" Grid.Row="4" Width="180 " VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Left" Maximum="100"/>
-                        <Label Grid.Row="5" Content="Maximum Price Decay"/>
-                        <Controls:NumericUpDown x:Name="maxPrice" Minimum="1" Value="50" Grid.Row="6" Width="180 " VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Left" Maximum="100"/>
+                        <Label Content="Data Options" FontSize="15"/>                       
+                        <Label Grid.Row="1" Content="Minimum Price Decay"/>
+                        <Controls:NumericUpDown x:Name="minPrice" Minimum="1" Value="5" Grid.Row="2" Width="180 " VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Left" Maximum="100"/>
+                        <Label Grid.Row="3" Content="Maximum Price Decay"/>
+                        <Controls:NumericUpDown x:Name="maxPrice" Minimum="1" Value="50" Grid.Row="4" Width="180 " VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Left" Maximum="100"/>
                     </Grid>
 
                     <Grid Grid.Row="2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="5"/>
-                            <ColumnDefinition Width="20"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="5"/>
-                            <RowDefinition Height="30"/>
-                            <RowDefinition Height="30"/>
-                            <RowDefinition Height="5"/>
-                        </Grid.RowDefinitions>
+                        <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="5"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                        <CheckBox x:Name="WatchAll" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                        <Label Grid.Row="1" Grid.Column="2" Content="Watch all items"/>
-                        
-                        <CheckBox Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                        <Label Grid.Row="2" Grid.Column="2" Content="Show non-matching items"/>
+                                <Grid.RowDefinitions>   
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="30"/>
+                                    <RowDefinition Height="30"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                
+                                <CheckBox x:Name="WatchAll" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                <Label Grid.Row="1" Grid.Column="2" Content="Watch all items"/>
+
+                                <CheckBox Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="showNonMatching"/>
+                                <Label Grid.Row="2" Grid.Column="2" Content="Show non-matching items"/>
+                            </Grid>
                     </Grid>
 
                     <Grid Grid.Row="3">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="40"/>
                             <RowDefinition Height="40"/>
+                            <RowDefinition Height="40"/>
                         </Grid.RowDefinitions>
                         <Button Width="180" Grid.Row="0" VerticalAlignment="Center" Height="20" Click="ButtonAPI_Click" Content="Request New Item List" FontFamily="Montserrat" FontSize="10" FontWeight="Normal"/>
-                        <Button Width="180" Grid.Row="1" VerticalAlignment="Center" Height="20" Click="IntialStart_Click" Content="Start" FontFamily="Montserrat" FontSize="10" FontWeight="Normal"/>
+                        <Button Width="180" Grid.Row="1" VerticalAlignment="Center" Height="20" Click="IntialStart_Click" Content="Recent Listings Parse" FontFamily="Montserrat" FontSize="10" FontWeight="Normal" x:Name="InitialStart"/>
+                        <Button Width="180" Grid.Row="2" VerticalAlignment="Center" Height="20" Click="RunningTask_Click" Content="Star Task" FontFamily="Montserrat" FontSize="10" FontWeight="Normal" x:Name="RunningTask"/>
                     </Grid>
                 </Grid>
             </GroupBox>
@@ -140,7 +141,7 @@
                     <Grid>
                         <TextBox Height="17" VerticalAlignment="Bottom" Width="285" Margin="0,0,5,0" HorizontalAlignment="Right"  Name="TextFilter" TextChanged="TextFilter_TextChanged"/>
                     </Grid>
-                    <ItemsControl Name="icTodoList" Grid.Row="3" VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True" VerticalAlignment="Top"  Height="400">
+                    <ItemsControl Name="ItemsIDCheckList" Grid.Row="3" VirtualizingStackPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True" VerticalAlignment="Top"  Height="400">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Grid Margin="7,0,0,5" x:Name="ListDataTemplate">
@@ -149,7 +150,7 @@
                                         <ColumnDefinition Width="145" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                        <CheckBox Name="checkkbox" IsChecked="{Binding IsChecked}" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"/>
+                                    <CheckBox Name="checkkbox" IsChecked="{Binding IsChecked}" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"/>
                                         <TextBlock Text="{Binding Item}" FontSize="9" Grid.Column="1" TextAlignment="Left"/>
                                         <TextBlock Text="{Binding Id}" FontSize="8" Grid.Column="2" TextAlignment="Left"/>
                                     </Grid>
@@ -179,7 +180,7 @@
         </Grid>
         <Grid x:Name="loadinGrid" Height="500" Width="1300" Background="#252525" Visibility="Visible">
             <Label x:Name="loadingText" Content="LOADING CLIENT" FontFamily="Montserrat" FontSize="30" HorizontalAlignment="Center" Margin="0,350,0,0"/>
-            <Image x:Name="loadingImage" Source="pidgey transparent.png" RenderOptions.BitmapScalingMode="HighQuality" Width="250" Margin="0,0,0,100"/>
+            <Image x:Name="loadingImage" Source="pidgey_transparent.png" RenderOptions.BitmapScalingMode="HighQuality" Width="250" Margin="0,0,0,100"/>
         </Grid>
     </Grid>
 </Controls:MetroWindow>
