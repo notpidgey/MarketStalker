@@ -10,12 +10,16 @@ namespace MarketStalker
     {
         public static bool IsOdd(int x)
         {
-            if (x % 2 == 0)
+            if (x == 0)
             {
-                return false;
+                return true;
             }
             else
             {
+                if (x % 2 == 0)
+                {
+                    return false;
+                }
                 return true;
             }
         }

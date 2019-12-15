@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MarketStalker"
+        xmlns:local="    "
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         mc:Ignorable="d"
         Background="#FF252525" 
@@ -15,7 +15,10 @@
         Height="500" Width="1300" 
         WindowStartupLocation="CenterScreen" 
         ResizeMode="NoResize" 
-        WindowStyle="None" Loaded="MetroWindow_Loaded">
+        WindowStyle="None" Loaded="MetroWindow_Loaded"
+        d:DesignHeight="500"
+        d:DesignWidth="1300"
+        KeyDown="Application_KeyDown">
     <Grid>
         <Grid>
             <Grid>
@@ -24,10 +27,11 @@
                           HorizontalScrollBarVisibility="Hidden" 
                           CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False" 
                           EnableRowVirtualization="True" EnableColumnVirtualization="True" IsReadOnly="True" 
-                          ScrollViewer.CanContentScroll="True">
+                          ScrollViewer.CanContentScroll="True" VirtualizingStackPanel.VirtualizationMode="Standard">
+
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding Id}" MaxWidth="60" MinWidth="60"/>
-                            <DataGridTextColumn Header="Item" Binding="{Binding Item}" Width="*"/>
+                            <DataGridTextColumn Header="Item" Binding="{Binding Item}" MaxWidth="150" MinWidth="150"/>
                             <DataGridTextColumn Header="Price" Binding="{Binding Price}" MaxWidth="55" MinWidth="55"/>
                             <DataGridTextColumn Header="2ND" Binding="{Binding Third}" MaxWidth="50" MinWidth="50"/>
                             <DataGridTextColumn Header="Discount" Binding="{Binding Discount}" MaxWidth="85" MinWidth="85"/>
@@ -38,9 +42,10 @@
                         </DataGrid.Columns>
                     </DataGrid>
                 </GroupBox>
+
                 <GroupBox Header="Console Log" Background="#CC323232" BorderBrush="#CC323232" Width="795" Height="150" HorizontalAlignment="Left" VerticalAlignment="Bottom">
                     <Grid>
-                        <TextBox Height="110" Width="785" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="ConsoleOutput" IsReadOnly="True"/>
+                        <TextBox Height="110" Width="785" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="ConsoleOutput" IsReadOnly="True" ScrollViewer.CanContentScroll="False"/>
                     </Grid>
                 </GroupBox>
             </Grid>
@@ -103,25 +108,25 @@
 
                     <Grid Grid.Row="2">
                         <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="5"/>
-                                    <ColumnDefinition Width="20"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="5"/>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
 
-                                <Grid.RowDefinitions>   
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="30"/>
-                                    <RowDefinition Height="30"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-                                
-                                <CheckBox x:Name="WatchAll" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                <Label Grid.Row="1" Grid.Column="2" Content="Watch all items"/>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
 
-                                <CheckBox Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="showNonMatching"/>
-                                <Label Grid.Row="2" Grid.Column="2" Content="Show non-matching items"/>
-                            </Grid>
+                            <CheckBox x:Name="WatchAll" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            <Label Grid.Row="1" Grid.Column="2" Content="Watch all items"/>
+
+                            <CheckBox Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="showNonMatching"/>
+                            <Label Grid.Row="2" Grid.Column="2" Content="Show non-matching items"/>
+                        </Grid>
                     </Grid>
 
                     <Grid Grid.Row="3">
@@ -132,7 +137,7 @@
                         </Grid.RowDefinitions>
                         <Button Width="180" Grid.Row="0" VerticalAlignment="Center" Height="20" Click="ButtonAPI_Click" Content="Request New Item List" FontFamily="Montserrat" FontSize="10" FontWeight="Normal"/>
                         <Button Width="180" Grid.Row="1" VerticalAlignment="Center" Height="20" Click="IntialStart_Click" Content="Recent Listings Parse" FontFamily="Montserrat" FontSize="10" FontWeight="Normal" x:Name="InitialStart"/>
-                        <Button Width="180" Grid.Row="2" VerticalAlignment="Center" Height="20" Click="RunningTask_Click" Content="Star Task" FontFamily="Montserrat" FontSize="10" FontWeight="Normal" x:Name="RunningTask"/>
+                        <Button Width="180" Grid.Row="2" VerticalAlignment="Center" Height="20" Click="RunningTask_Click" Content="Continuous Search" FontFamily="Montserrat" FontSize="10" FontWeight="Normal" x:Name="RunningTask"/>
                     </Grid>
                 </Grid>
             </GroupBox>
@@ -173,8 +178,7 @@
                                     </Border>
                                 </ControlTemplate>
                             </ItemsControl.Template>
-                        </ItemsControl>
-                    
+                    </ItemsControl>
                 </Grid>
             </GroupBox>
         </Grid>

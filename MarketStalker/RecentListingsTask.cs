@@ -1,109 +1,123 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 
 namespace MarketStalker
 {
     class RecentListingsTask
     {
-        public static async void InitialStart(IEnumerable<string> selectedItems)
+
+        public delegate void SellOrdersAvailable(object minPrice, MostRecentListing.SellOrder sellOrders);
+
+        public class WarframeMarketApi
         {
-            MainWindow mainwindow = (MainWindow)Application.Current.MainWindow;
+            private readonly TimeSpan _pollDelay = TimeSpan.FromSeconds(5);
+            public event SellOrdersAvailable SellOrdersAvailable;
 
-            mainwindow.CollectionGrid.Items.Clear();
-
-            string data = Request.Get("https://api.warframe.market/v1/most_recent");
-            MostRecentListing.RootObject rootobject = JsonConvert.DeserializeObject<MostRecentListing.RootObject>(data);
-
-            foreach (MostRecentListing.SellOrder sellOrder in rootobject.Payload.SellOrders.Where(a => selectedItems.Contains(a.Item.Id)))
+            public async Task StartPolling(CancellationToken cancellationToken, IEnumerable<string> selectedItems)
             {
-                while(RandomHelpers.IsOdd(mainwindow.InitialStartButton) == false)
+                MainWindow mainwindow = (MainWindow) Application.Current.MainWindow;
+                mainwindow.CollectionGrid.Items.Clear();
+
+                MostRecentListing.RootObject currentListings = await GetRecentListingsAsync();
+                MostRecentListing.RootObject outdatedListings = null;
+
+                var joe = currentListings.Payload.SellOrders.Take(25).ToList();
+
+                await Task.Delay(1000);
+
+                while (!cancellationToken.IsCancellationRequested)
                 {
-                    await Task.Delay(100);
+                    await GetSellOrdersAsnyc(joe, selectedItems, cancellationToken);
+                    
+                    await Task.Delay(_pollDelay);
+
+                    outdatedListings = currentListings;
+                    currentListings = await GetRecentListingsAsync();
+
+                    joe = currentListings.Payload.SellOrders
+                        .Take(300)
+                        .Where(d => outdatedListings.Payload.SellOrders
+                            .Take(300)
+                            .All(t => t.Id != d.Id))
+                        .ToList();
                 }
-
-                await Task.Delay(350);
-
-                string reqstname = sellOrder.Item.En.ItemName.ToLower().Replace("&", "and").Replace("'", "").Replace("-", "_").Replace(" ", "_");
-                string itempage = Request.Get("https://api.warframe.market/v1/items/" +
-                                              reqstname + "/orders");
-
-                ItemPage.Rootobject rootObjectItemPage =
-                    JsonConvert.DeserializeObject<ItemPage.Rootobject>(itempage);
-
-                object minPrice = null;
-                try
-                {
-                    minPrice = rootObjectItemPage.Payload.Orders
-                        .Where(w => w.User.Status == "ingame" && w.order_type == "sell")
-                        .Select(s => s.Platinum)
-                        .OrderBy(o => o)
-                        .Take(2)
-                        .Last();
-                }
-                catch
-                {
-                    minPrice = rootObjectItemPage.Payload.Orders
-                        .Where(w => w.order_type == "sell")
-                        .Select(s => s.Platinum)
-                        .OrderBy(o => o)
-                        .Take(2)
-                        .Last();
-                }
-
-                string d = sellOrder.Item.En.ItemName;
-                double thirdlistingprice = Convert.ToDouble(minPrice);
-
-                double newlistingprice = sellOrder.Platinum;
-                double priceDifference = newlistingprice - thirdlistingprice;
-
-                if (RandomHelpers.IsNegative(priceDifference))
-                {
-                    MainWindow.main.ConsoleLogNew = "Item: " + sellOrder.Item.En.ItemName + " Price: " + newlistingprice + " Difference: " + priceDifference;
-
-                    string seller = sellOrder.User.IngameName;
-                    double rep = sellOrder.User.Reputation;
-                    DateTime time = sellOrder.LastUpdate;
-
-                    bool matches = Convert.ToDouble(priceDifference.ToString().Replace("-", "")) >= mainwindow.minPrice.Value && Convert.ToDouble(priceDifference.ToString().Replace("-", "")) <= mainwindow.maxPrice.Value;
-                    if (mainwindow.showNonMatching.IsChecked == true)
-                    {
-                        var data2 = new Items.DataGrid { Id = sellOrder.Id.Substring(5, 8), Item = sellOrder.Item.En.ItemName, Price = newlistingprice, Third = thirdlistingprice, Discount = priceDifference, Seller = seller, Rep = rep, Matches = matches, Time = time };
-                        mainwindow.CollectionGrid.Items.Add(data2);
-                        mainwindow.ConsoleOutput.ScrollToEnd();
-                    }
-                    else
-                    {
-                        if (!matches)
-                        {
-
-                        }
-                        else
-                        {
-                            var data2 = new Items.DataGrid { Id = sellOrder.Id.Substring(5, 9), Item = sellOrder.Item.En.ItemName, Price = newlistingprice, Third = thirdlistingprice, Discount = priceDifference, Seller = seller, Rep = rep, Matches = matches, Time = time };
-                            mainwindow.CollectionGrid.Items.Add(data2);
-                            mainwindow.ConsoleOutput.ScrollToEnd();
-
-                        }
-                    }
-                }
-                else
-                {
-                    MainWindow.main.ConsoleLogNew =
-                        "Item: " + sellOrder.Item.En.ItemName + " Price: " +
-                        newlistingprice + " Difference: +" + priceDifference;
-                    mainwindow.ConsoleOutput.ScrollToEnd();
-                }
-                mainwindow.CollectionGrid.Items.Refresh();
             }
-            mainwindow.showNonMatching.Content = "Recent Listings Parse";
-            mainwindow.InitialStartButton = 0;
-        }
 
+            public async Task GetSellOrdersAsnyc(
+                List<MostRecentListing.SellOrder> currentListings, IEnumerable<string> selectedItems, CancellationToken cancellationToken)
+            {
+                foreach (MostRecentListing.SellOrder sellOrder in currentListings.Where(a =>
+                        selectedItems.Contains(a.Item.Id)))
+                    {
+                        try
+                        {
+                            await Task.Delay(350, cancellationToken).ConfigureAwait(false);
+                        }
+                        catch
+                        {
+                            break;
+                        }
+
+                        var reqstname = sellOrder.Item.En.ItemName.ToLower()
+                            .Replace("&",
+                                "and")
+                            .Replace("'",
+                                "")
+                            .Replace("-",
+                                "_")
+                            .Replace(" ",
+                                "_");
+
+                        var itempage = await Request.GetAsync("https://api.warframe.market/v1/items/" +
+                                                              reqstname + "/orders").ConfigureAwait(false);
+
+                        ItemPage.Rootobject rootObjectItemPage =
+                            JsonConvert.DeserializeObject<ItemPage.Rootobject>(itempage);
+
+                        object minPrice = null;
+                        try
+                        {
+                            minPrice = rootObjectItemPage.Payload.Orders
+                                .Where(w => w.User.Status == "ingame" && w.order_type == "sell")
+                                .Select(s => s.Platinum)
+                                .OrderBy(o => o)
+                                .Take(2)
+                                .Last();
+                        }
+                        catch
+                        {
+                            minPrice = rootObjectItemPage.Payload.Orders
+                                .Where(w => w.order_type == "sell")
+                                .Select(s => s.Platinum)
+                                .OrderBy(o => o)
+                                .Take(2)
+                                .Last();
+                        }
+
+                        SellOrdersAvailable?.Invoke(minPrice, sellOrder);
+
+                        //await UpdateUI(minPrice, sellOrder);
+
+                    }
+            }
+
+            public async Task<MostRecentListing.RootObject> GetRecentListingsAsync()
+            {
+                string data = await Request.GetAsync("https://api.warframe.market/v1/most_recent");
+                MostRecentListing.RootObject rootobject =
+                    JsonConvert.DeserializeObject<MostRecentListing.RootObject>(data);
+
+                return rootobject;
+            }
+        }
     }
 }

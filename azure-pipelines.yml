@@ -39,5 +39,6 @@ steps:
     action: 'create'
     target: '$(Build.SourceVersion)'
     tagSource: 'gitTag'
+    assets: '$(Build.ArtifactStagingDirectory)/*.exe'
     changeLogCompareToRelease: 'lastFullRelease'
     changeLogType: 'commitBased'
