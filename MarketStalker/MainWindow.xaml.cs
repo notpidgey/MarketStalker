@@ -106,6 +106,8 @@ namespace MarketStalker
             ConsoleOutput.Text += "Application Started...\nAttempting to update item list";
 
             PullData("API");
+
+            loadingImage.Visibility = Visibility.Visible;
             for (double i = 1.00; i > 0; i = i - .01)
             {
                 loadingImage.Opacity = i;

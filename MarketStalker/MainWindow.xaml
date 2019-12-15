@@ -183,8 +183,8 @@
             </GroupBox>
         </Grid>
         <Grid x:Name="loadinGrid" Height="500" Width="1300" Background="#252525" Visibility="Visible">
-            <Label x:Name="loadingText" Content="LOADING CLIENT" FontFamily="Montserrat" FontSize="30" HorizontalAlignment="Center" Margin="0,350,0,0"/>
             <Image x:Name="loadingImage" Source="pidgey_transparent.png" RenderOptions.BitmapScalingMode="HighQuality" Width="250" Margin="0,0,0,100"/>
+            <Label x:Name="loadingText" Content="LOADING CLIENT" FontFamily="Montserrat" FontSize="30" HorizontalAlignment="Center" Margin="0,350,0,0"/>
         </Grid>
     </Grid>
 </Controls:MetroWindow>
