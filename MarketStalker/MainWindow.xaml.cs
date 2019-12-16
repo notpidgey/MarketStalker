@@ -31,18 +31,10 @@ namespace MarketStalker
         public MainWindow()
         {
             InitializeComponent();
-            main = this;
 
             _warframeApiPoller.SellOrdersAvailable += ProcessSellOrders;
         }
 
-        internal static MainWindow main;
-        
-        internal string ConsoleLogNew
-        {
-            set { Dispatcher.Invoke(new Action(() => { ConsoleOutput.Text += "\n" + value; })); }
-        }
-        
         private void PullData(string method)
         {
             string data;
@@ -59,11 +51,11 @@ namespace MarketStalker
 
             items = rootobject.Payload.Items.Select(a => new ItemEntireList { Item = a.ItemName, IsChecked = false, Id = a.Id }).ToList();
 
-            ItemsIDCheckList.Items.SortDescriptions.Add(
+            ItemsIdCheckList.Items.SortDescriptions.Add(
                 new SortDescription(
                     "Item",
                     ListSortDirection.Ascending));
-            ItemsIDCheckList.ItemsSource = items;
+            ItemsIdCheckList.ItemsSource = items;
 
             TotalItemsText.Text = rootobject.Payload.Items.Count().ToString();
             ConsoleOutput.Text += "\nUpdated Item List Using " + method;
@@ -72,7 +64,7 @@ namespace MarketStalker
 
         public void UserFilter()
         {
-            ICollectionView view = CollectionViewSource.GetDefaultView(ItemsIDCheckList.ItemsSource);
+            ICollectionView view = CollectionViewSource.GetDefaultView(ItemsIdCheckList.ItemsSource);
             if (view != null)
             {
                 switch (TextFilter.Text.ToLower())
@@ -107,25 +99,25 @@ namespace MarketStalker
 
             PullData("API");
 
-            loadingImage.Visibility = Visibility.Visible;
+            LoadingLogo.Visibility = Visibility.Visible;
             for (double i = 1.00; i > 0; i = i - .01)
             {
-                loadingImage.Opacity = i;
-                loadingText.Opacity = i;
+                LoadingLogo.Opacity = i;
+                LoadingText.Opacity = i;
                 await Task.Delay(2);
             }
             for (double i = 1.00; i > 0; i = i - .01)
             {
-                loadinGrid.Opacity = i;
+                LoadingGrid.Opacity = i;
                 await Task.Delay(1);
             }
-            loadinGrid.Visibility = Visibility.Hidden;
+            LoadingGrid.Visibility = Visibility.Hidden;
 
         }
 
         async void IntialStart_Click(object sender, RoutedEventArgs e)
         {
-            var myItems = ItemsIDCheckList.ItemsSource as IEnumerable<ItemEntireList>;
+            var myItems = ItemsIdCheckList.ItemsSource as IEnumerable<ItemEntireList>;
 
             if (!_isPulling)
             {
@@ -162,7 +154,7 @@ namespace MarketStalker
 
         async void RunningTask_Click(object sender, RoutedEventArgs e)
         {
-            var myItems = ItemsIDCheckList.ItemsSource as IEnumerable<ItemEntireList>;
+            var myItems = ItemsIdCheckList.ItemsSource as IEnumerable<ItemEntireList>;
             
             if (!_isPolling)
             {
@@ -200,8 +192,8 @@ namespace MarketStalker
                     var newlistingprice = sellOrder.Platinum;
                     var priceDifference = newlistingprice - thirdlistingprice;
 
-                    ConsoleLogNew =
-                        "Item: " + sellOrder.Item.En.ItemName + " Price: " + newlistingprice +
+                    ConsoleOutput.Text +=
+                        "\nItem: " + sellOrder.Item.En.ItemName + " Price: " + newlistingprice +
                         " Difference: " + priceDifference;
 
                     if (RandomHelpers.IsNegative(priceDifference))
@@ -212,10 +204,10 @@ namespace MarketStalker
 
                         bool matches =
                             Convert.ToDouble(priceDifference.ToString().Replace("-", "")) >=
-                            minPrice.Value &&
-                            Convert.ToDouble(priceDifference.ToString().Replace("-", "")) <= maxPrice.Value;
+                            MinimumDiscount.Value &&
+                            Convert.ToDouble(priceDifference.ToString().Replace("-", "")) <= MaximumDiscount.Value;
 
-                        if (showNonMatching.IsChecked == true)
+                        if (ShowNonMatching.IsChecked == true)
                         {
                             var data = new Items.DataGrid
                             {

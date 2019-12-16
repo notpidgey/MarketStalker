@@ -29,20 +29,20 @@ namespace MarketStalker
                 MostRecentListing.RootObject currentListings = await GetRecentListingsAsync();
                 MostRecentListing.RootObject outdatedListings = null;
 
-                var joe = currentListings.Payload.SellOrders.Take(25).ToList();
+                var ListingsToCheck = currentListings.Payload.SellOrders.Take(25).ToList();
 
                 await Task.Delay(1000);
 
                 while (!cancellationToken.IsCancellationRequested)
                 {
-                    await GetSellOrdersAsnyc(joe, selectedItems, cancellationToken);
+                    await GetSellOrdersAsnyc(ListingsToCheck, selectedItems, cancellationToken);
                     
                     await Task.Delay(_pollDelay);
 
                     outdatedListings = currentListings;
                     currentListings = await GetRecentListingsAsync();
 
-                    joe = currentListings.Payload.SellOrders
+                    ListingsToCheck = currentListings.Payload.SellOrders
                         .Take(300)
                         .Where(d => outdatedListings.Payload.SellOrders
                             .Take(300)
@@ -54,9 +54,8 @@ namespace MarketStalker
             public async Task GetSellOrdersAsnyc(
                 List<MostRecentListing.SellOrder> currentListings, IEnumerable<string> selectedItems, CancellationToken cancellationToken)
             {
-                foreach (MostRecentListing.SellOrder sellOrder in currentListings.Where(a =>
-                        selectedItems.Contains(a.Item.Id)))
-                    {
+                foreach (MostRecentListing.SellOrder sellOrder in currentListings.Where(a => selectedItems.Contains(a.Item.Id)))
+                {
                         try
                         {
                             await Task.Delay(350, cancellationToken).ConfigureAwait(false);
@@ -103,10 +102,7 @@ namespace MarketStalker
                         }
 
                         SellOrdersAvailable?.Invoke(minPrice, sellOrder);
-
-                        //await UpdateUI(minPrice, sellOrder);
-
-                    }
+                }
             }
 
             public async Task<MostRecentListing.RootObject> GetRecentListingsAsync()
