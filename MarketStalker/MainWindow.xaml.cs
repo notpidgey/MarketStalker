@@ -31,8 +31,10 @@ namespace MarketStalker
         public MainWindow()
         {
             InitializeComponent();
-
+             
             _warframeApiPoller.SellOrdersAvailable += ProcessSellOrders;
+
+            List<Items.DataGrid> orders = CollectionGrid.DataContext as List<Items.DataGrid>;
         }
 
         private void PullData(string method)
@@ -271,18 +273,16 @@ namespace MarketStalker
             TotalItemsWatchingText.Text = (Convert.ToInt32(TotalItemsWatchingText.Text) - 1).ToString();
         }
 
-        private void Application_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        private void CollectionGrid_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.C)
+            if (CollectionGrid.SelectedCells.Count() == 9)
             {
-                if (CollectionGrid.SelectedCells.Count() == 9)
-                {
-                    var asdf = "/w " + (CollectionGrid.SelectedCells[5].Column.GetCellContent(CollectionGrid.SelectedCells[5].Item) as TextBlock).Text + " Hi! I want to buy: " +
-                               (CollectionGrid.SelectedCells[1].Column.GetCellContent(CollectionGrid.SelectedCells[1].Item) as TextBlock).Text + " for " + (CollectionGrid.SelectedCells[2].Column.GetCellContent(CollectionGrid.SelectedCells[2].Item) as TextBlock).Text +
-                               " platinum. (warframe.market)";
-                    Clipboard.SetText(asdf);
-                }
-
+                Clipboard.SetText("/w " + (CollectionGrid.SelectedCells[5].Column.GetCellContent(CollectionGrid.SelectedCells[5].Item) as TextBlock).Text + " Hi! I want to buy: " +
+                                  (CollectionGrid.SelectedCells[1].Column.GetCellContent(CollectionGrid.SelectedCells[1].Item) as TextBlock).Text + " for " + 
+                                  (CollectionGrid.SelectedCells[2].Column.GetCellContent(CollectionGrid.SelectedCells[2].Item) as TextBlock).Text +
+                                  " platinum. (warframe.market)");
+                ConsoleOutput.Text += "\nMessage Copied";
+                ConsoleOutput.ScrollToEnd();
             }
         }
     }

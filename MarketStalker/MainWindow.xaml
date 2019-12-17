@@ -15,8 +15,7 @@
         Height="500" Width="1300" 
         WindowStartupLocation="CenterScreen" 
         ResizeMode="NoResize" 
-        WindowStyle="None" Loaded="MetroWindow_Loaded"
-        KeyDown="Application_KeyDown">
+        WindowStyle="None" Loaded="MetroWindow_Loaded">
     <Grid>
         <Grid>
             <Grid>
@@ -25,7 +24,7 @@
                           HorizontalScrollBarVisibility="Hidden" 
                           CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False" 
                           EnableRowVirtualization="True" EnableColumnVirtualization="True" IsReadOnly="True" 
-                          ScrollViewer.CanContentScroll="True" VirtualizingStackPanel.VirtualizationMode="Standard">
+                          ScrollViewer.CanContentScroll="True" VirtualizingStackPanel.VirtualizationMode="Standard" MouseDown="CollectionGrid_MouseDown" >
 
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding Id}" MaxWidth="60" MinWidth="60"/>
