@@ -80,6 +80,3 @@ This is how I like to use the application to get the most use out of my time and
 2. Click Continuous Search
 3. Sort DataGrid by discount
 4. Check every couple of minutes to find good deals.
-
-# Thank You #
-The C# Guild for helping me, encouraging me to optimize my code, and make better decisions. ~~And for giving me a place to shitpost~~ And you for taking the time to checkout my project :D
